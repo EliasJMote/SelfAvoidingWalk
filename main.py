@@ -1,7 +1,6 @@
 # Created by: Elias Mote, Ryan Moeller
 import json
 import sys
-from collections import defaultdict
 from typing import Dict, List, Optional, Set, Tuple
 
 
@@ -38,8 +37,8 @@ def representative(s: state, l: int) -> state:
 
 
 def construct_dfa(k: int) -> dict:
-    # The total length of the self-avoiding walk we are checking
-    length: int = k
+    # The max length of the self-avoiding walk we are checking
+    max_length: int = k
 
     symbols: Symbols = ["r", "u", "l", "d"] # right, up, left, down
     start_state: state = 0
@@ -62,7 +61,7 @@ def construct_dfa(k: int) -> dict:
     cur_length: int = 0
 
     # Repeat steps 2-4 until the set of untreated states is empty
-    while untreated:
+    while untreated and cur_length < max_length:
 
         #
         # Step 2
