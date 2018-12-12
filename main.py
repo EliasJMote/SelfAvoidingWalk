@@ -42,7 +42,7 @@ def construct_dfa(k: int) -> dict:
 
     symbols: Symbols = ["r", "u", "l", "d"] # right, up, left, down
     start_state: state = 0
-    end_states: Set[state] = {ω}
+    end_states: List[state] = [ω]
 
     #
     # Step 1
