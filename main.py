@@ -6,7 +6,8 @@ def main():
 	import sys
 
 	# The total length of the self-avoiding walk we are checking
-	k = 4
+	#k = 5
+	k = input("Enter a value k for the max length of the self-avoiding path")
 
 	# The four directions (the language of the DFA).
 	# 1: Immediate return
@@ -34,7 +35,10 @@ def main():
 	transfers = [[-1,-1,-1,-1] for _ in range(2)]
 
 	# State lengths
-	state_lengths = [0 for _ in range(4)]
+	state_lengths = [0 for _ in range(5)]
+
+	# Path to reach each state
+	paths = [[]]
 
 	# The current walk length we are considering
 	cur_length = 0
@@ -64,11 +68,18 @@ def main():
 		if(s == 0):
 			untreated.append(1)
 			state_lengths[1] = 1
+			paths.append([[]])
+			paths[s+1][0] = [1,2,3,4]
 		elif(s == 1):
+			paths.append(paths[s] + [2])
+			paths.append(paths[s] + [3])
+			paths.append(paths[s] + [4])
 			untreated.append(2)
 			untreated.append(3)
+			untreated.append(4)
 			state_lengths[2] = 2
 			state_lengths[3] = 2
+			state_lengths[4] = 2
 
 		for d in range(4):
 
@@ -82,10 +93,8 @@ def main():
 			elif(s == 1):
 				if(d == 0):
 					transfers[s][d] = "w"
-				elif(d == 1):
-					transfers[s][d] = 2
 				else:
-					transfers[s][d] = 3
+					transfers[s][d] = d+1
 				
 
 			elif(cur_length < k):
@@ -97,16 +106,12 @@ def main():
 					# untreated states
 					t = max(untreated) + 1
 					untreated.append(t)
+
+					# Put the transfer from s to t in the set of transfers
 					transfers[s][d] = t
+					paths.append(paths[s] + [d+1])
 					state_lengths.append(-1)
 					state_lengths[t] = cur_length + 1
-
-			# If t is a state we have not seen so far, put it in the set of
-			# untreated states
-			#if t not in treated and not in untreated:
-				#untreated.append(t)
-
-			# Put the transfer from s to t in the set of transfers
 
 
 		# Step 4:
@@ -114,6 +119,7 @@ def main():
 		# states is not empty, go to 2; otherwise, continue to 5
 		treated.append(s)
 
+	# The final state is the fail state "w"
 	transfers.append(["w","w","w","w"])
 
 	# Step 5:
@@ -145,9 +151,13 @@ def main():
 					"symbols": [1,2,3,4],
 					"start": start_state
 				}
-
-	print("Set of treated states:")
-	print(treated)
+	print("Paths:")
+	for p in range(len(paths)):
+		print("State " + str(p) + ": " + str(paths[p]))
+	print()
+	#print("Set of treated states:")
+	#print(treated)
+	#print()
 	print("Set of transfers:")
 	for t in transfers:
 		print(t)
