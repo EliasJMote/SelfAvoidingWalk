@@ -1,16 +1,131 @@
 # Created by: Elias Mote, Ryan Moeller
 
+# This function will check for and report any loops
+def check_for_loops(s, d, paths, transfers):
+
+	augmented_path = paths[s] + [d]
+
+	# Check state to see if a loop would be formed
+	# A loop can be a rectangle or a square, or it can be more complex.
+	# However, regardless of the loop's form, the loop much have at least 3 more 3's than 4's or 3 more
+	# 4's than 3's. This is the only way for a loop to be formed.
+	# First, check how many 3's and 4's are in the list.
+	num_3 = augmented_path.count(3)
+	num_4 = augmented_path.count(4)
+
+	# Compare them. If the requirement is not met, simply return false. This will speed things up by
+	# eliminating a lot of cases.
+	if(not (num_3 >= num_4 + 3) and not (num_4 >= num_3 + 3)):
+		return False
+
+	"""
+
+	# Squares are the easiest to check for, so we'll check them first.
+	# A square loop is a n x n loop. Length of the square is determined by the number of consecutive 1's.
+	# A square of length 1 has the pattern [3,3,3,3] or [4,4,4,4] at the end of the path.
+	if((augmented_path == [3,3,3,3] or augmented_path == [[1,2,3,4],3,3,3])
+		or (augmented_path == [4,4,4,4] or augmented_path == [[1,2,3,4],4,4,4])):
+
+		# If so, this path will go to the fail state
+		transfers[s][d-1] = "w"
+
+		return True
+
+	# Square side length 2: [2,2,3,2,3,2,3,2]
+	# Square side length 3: [2,2,2,4,2,2,4,2,2,4,2,2]
+	# etc.
+	# Walk the path backwards, checking for this type of pattern until the number of 2's at the end is
+	# exhausted.
+	chain_len = 0
+	for i in range(len(augmented_path)):
+		if(not (augmented_path[:-i] == 2)):
+			break
+		chain_len += 1
+
+	# Check the square with chain length
+	square_3 = []
+	square
+	if()
+
+	"""
+
+	# Generate the path as a collection of (x,y) coordinates
+	coords = []
+	#directions = ["right", "up", "left", "down"]
+	cur_pos = (0,0)
+	for i in range(len(augmented_path)):
+		direction = None
+		if(i == 0):
+			cur_pos = (0,0)
+		elif(i == 1):
+			direction = "right"
+			cur_pos = tuple(map(sum, zip(cur_pos, (1,0))))
+			
+		else:
+
+			if(d == 2):
+				if(direction == "right"):
+					cur_pos = tuple(map(sum, zip(cur_pos, (1,0))))
+				elif(direction == "up"):
+					cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+				elif(direction == "left"):
+					cur_pos = tuple(map(sum, zip(cur_pos, (-1,0))))
+				elif(direction == "down"):
+					cur_pos = tuple(map(sum, zip(cur_pos, (-1,0))))
+
+			elif(d == 3):
+				if(direction == "right"):
+					direction = "up"
+					cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+				elif(direction == "up"):
+					direction = "left"
+					cur_pos = tuple(map(sum, zip(cur_pos, (-1,0))))
+				elif(direction == "left"):
+					direction = "down"
+					cur_pos = tuple(map(sum, zip(cur_pos, (0,-1))))
+				elif(direction == "down"):
+					direction = "right"
+					cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+			elif(d == 4):
+
+				if(direction == "right"):
+					direction = "down"
+					cur_pos = tuple(map(sum, zip(cur_pos, (0,-1))))
+				elif(direction == "down"):
+					direction = "left"
+					cur_pos = tuple(map(sum, zip(cur_pos, (-1,0))))
+				elif(direction == "left"):
+					direction = "up"
+					cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+				elif(direction == "up"):
+					direction = "right"
+					cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+
+		coords.append(cur_pos)
+
+	# Walk the list, putting coordinates we've seen into a list. If we find a coordinate we've seen already,
+	# return true as a loop has been found.
+	# Else, return false.
+	coords_seen = []
+	for c in coords:
+		if(coords_seen.count(c) >= 1):
+			return True
+		coords_seen.append(c)
+
+	return False
+
+
 def main():
 
 	import json
 	import sys
 
 	# The total length of the self-avoiding walk we are checking
-	k = 4
+	k = 10
 	#k = input("Enter a value k for the max length of the self-avoiding path: ")
 
 	# The four directions (the language of the DFA).
-	# 1: Immediate return
+	# 1: Immediate return (loop on itself)
 	# 2: Continue in the same direction as the previous step
 	# 3: A step in the opposite direction to the second to last step (if there
 	# isn't a second to last step, this could be considered a left or right)
@@ -81,45 +196,36 @@ def main():
 			state_lengths[3] = 2
 			state_lengths[4] = 2
 
-		for d in range(4):
+		for d in range(1,5):
 
 			# Initialize state 0
 			# All 4 directions go to state 1
 			if(s == 0):
-				transfers[s][d] = 1
+				transfers[s][d-1] = 1
 				
 
 			# Initialize state 1
 			elif(s == 1):
-				if(d == 0):
-					transfers[s][d] = "w"
+				if(d == 1):
+					transfers[s][d-1] = "w"
 				else:
-					transfers[s][d] = d+1
+					transfers[s][d-1] = d
 				
 
 			elif(cur_length < k):
-				if(d == 0):
+				if(d == 1):
 					transfers.append([-1,-1,-1,-1])
 					transfers[s][0] = "w"
 				else:
-					# Check state a to see if a loop would be formed
-					# We'll start with a loop of length 1
-					# A loop of length 1 is formed when the last 3 directions
-					# were [3,3,3] or [4,4,4] and the current direction is 3
-					# or 4, respectively
-					# Only perform this check when the current length is at
-					# least 3
+					
+					# Only perform this check when the current length is at least 3 and the direction is 2 
+					# through 4 (direction 1 always leads to a loop)
 					if(cur_length >= 3 and d>= 2):
 
-						# Now, check if the path is equivalent to [3,3,3] or
-						# [4,4,4]
-						if(((paths[s][-3:] == [3,3,3] or paths[s][-3:] == [[1,2,3,4],3,3]) and d == 2)
-							or ((paths[s][-3:] == [4,4,4] or paths[s][-3:] == [[1,2,3,4],4,4]) and d == 3)):
 
-							# If so, this path will go to the fail state
-							transfers[s][d] = "w"
-
-							# Continue the loop
+						# Check for loops and continue if any are found
+						if(check_for_loops(s, d, paths, transfers)):
+							transfers[s][d-1] = "w"
 							continue
 
 					# If t is a state we have not seen so far, put it in the set
@@ -128,8 +234,8 @@ def main():
 					untreated.append(t)
 
 					# Put the transfer from s to t in the set of transfers
-					transfers[s][d] = t
-					paths.append(paths[s] + [d+1])
+					transfers[s][d-1] = t
+					paths.append(paths[s] + [d])
 					state_lengths.append(-1)
 					state_lengths[t] = cur_length + 1
 
@@ -171,10 +277,10 @@ def main():
 					"symbols": [1,2,3,4],
 					"start": start_state
 				}
-	print("Paths:")
-	for p in range(len(paths)):
-		print("State " + str(p) + ": " + str(paths[p]))
-	print()
+	#print("Paths:")
+	#for p in range(len(paths)):
+		#print("State " + str(p) + ": " + str(paths[p]))
+	#print()
 	#print("Set of treated states:")
 	#print(treated)
 	#print()
