@@ -6,8 +6,8 @@ def main():
 	import sys
 
 	# The total length of the self-avoiding walk we are checking
-	#k = 5
-	k = input("Enter a value k for the max length of the self-avoiding path")
+	k = 4
+	#k = input("Enter a value k for the max length of the self-avoiding path: ")
 
 	# The four directions (the language of the DFA).
 	# 1: Immediate return
@@ -102,8 +102,28 @@ def main():
 					transfers.append([-1,-1,-1,-1])
 					transfers[s][0] = "w"
 				else:
-					# If t is a state we have not seen so far, put it in the set of
-					# untreated states
+					# Check state a to see if a loop would be formed
+					# We'll start with a loop of length 1
+					# A loop of length 1 is formed when the last 3 directions
+					# were [3,3,3] or [4,4,4] and the current direction is 3
+					# or 4, respectively
+					# Only perform this check when the current length is at
+					# least 3
+					if(cur_length >= 3 and d>= 2):
+
+						# Now, check if the path is equivalent to [3,3,3] or
+						# [4,4,4]
+						if(((paths[s][-3:] == [3,3,3] or paths[s][-3:] == [[1,2,3,4],3,3]) and d == 2)
+							or ((paths[s][-3:] == [4,4,4] or paths[s][-3:] == [[1,2,3,4],4,4]) and d == 3)):
+
+							# If so, this path will go to the fail state
+							transfers[s][d] = "w"
+
+							# Continue the loop
+							continue
+
+					# If t is a state we have not seen so far, put it in the set
+					# of untreated states
 					t = max(untreated) + 1
 					untreated.append(t)
 
