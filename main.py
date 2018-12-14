@@ -294,8 +294,10 @@ def main():
 		if(state_lengths[i] == k):
 			end_states.append(i)
 
-	#for s in end_states:
-	transfers.append(["w","w","w","w"]) 
+	for s in end_states:
+		transfers.append(["w","w","w","w"]) 
+
+	#transfers.append(["w","w","w","w"])
 
 	
 	for j in range(len(transfers)):
