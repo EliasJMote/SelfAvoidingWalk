@@ -33,7 +33,7 @@ else
     catch e
         # gracefully exit on EPIPE when stdout closes
         if typeof(e) != Base.IOError || e.code != Base.UV_EPIPE
-            reraise(e)
+            throw(e)
         end
     end
 end
