@@ -229,7 +229,7 @@ def main():
 					transfers[s][d-1] = d
 				
 
-			elif(cur_length <= k):
+			elif(cur_length < k):
 				if(d == 1):
 					transfers.append([-1,-1,-1,-1])
 					transfers[s][0] = "w"
@@ -288,14 +288,23 @@ def main():
 	}
 	"""
 
-	for j in range(len(transfers)):
-		for k in range(4):
-			if(transfers[j][k] == "w"):
-				transfers[j][k] = len(transfers) - 1
+	treated.append(len(treated))
 
 	for i in range(len(state_lengths)):
 		if(state_lengths[i] == k):
 			end_states.append(i)
+
+	#for s in end_states:
+	transfers.append(["w","w","w","w"]) 
+
+	
+	for j in range(len(transfers)):
+		for k in range(4):
+			if(transfers[j][k] == "w"):
+				transfers[j][k] = len(treated) - 1
+
+
+
 
 	json_dfa = 	{
 					"transitions": transfers,
