@@ -121,7 +121,7 @@ def main():
 	import sys
 
 	# The total length of the self-avoiding walk we are checking
-	k = 10
+	k = 3
 	#k = input("Enter a value k for the max length of the self-avoiding path: ")
 
 	# The four directions (the language of the DFA).
@@ -284,10 +284,11 @@ def main():
 	#print("Set of treated states:")
 	#print(treated)
 	#print()
-	print("Set of transfers:")
-	for t in transfers:
-		print(t)
-	#sys.stdout.write(str(json_dfa))
+	#print("Set of transfers:")
+	#for t in transfers:
+		#print(t)
+	print(json.dumps(json_dfa))
+	#sys.stdout.write(str(json.dumps(json_dfa)))
 	#sys.stdout.flush()
 	#print()
 
