@@ -1,8 +1,8 @@
 # Created by: Elias Mote, Ryan Moeller
+import numpy as np
 
 # This function will check for and report any loops
 def check_for_loops(s, d, paths, transfers):
-
 	augmented_path = paths[s] + [d]
 
 	# Check state to see if a loop would be formed
@@ -51,55 +51,71 @@ def check_for_loops(s, d, paths, transfers):
 
 	# Generate the path as a collection of (x,y) coordinates
 	coords = []
-	#directions = ["right", "up", "left", "down"]
-	cur_pos = (0,0)
+	#cur_pos = (0,0)
+	cur_pos = np.array([0,0])
 	for i in range(len(augmented_path)):
 		direction = None
-		if(i == 0):
-			cur_pos = (0,0)
-		elif(i == 1):
+		if(i == 1):
 			direction = "right"
-			cur_pos = tuple(map(sum, zip(cur_pos, (1,0))))
+			#cur_pos = tuple(map(sum, zip(cur_pos, (1,0))))
 			
 		else:
 
+			"""
 			if(d == 2):
 				if(direction == "right"):
-					cur_pos = tuple(map(sum, zip(cur_pos, (1,0))))
+					cur_pos += np.array([1,0])
+					#cur_pos = tuple(map(sum, zip(cur_pos, (1,0))))
 				elif(direction == "up"):
-					cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+					#cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+					cur_pos += np.array([0,1])
 				elif(direction == "left"):
-					cur_pos = tuple(map(sum, zip(cur_pos, (-1,0))))
+					#cur_pos = tuple(map(sum, zip(cur_pos, (-1,0))))
+					cur_pos += np.array([-1,0])
 				elif(direction == "down"):
-					cur_pos = tuple(map(sum, zip(cur_pos, (-1,0))))
-
-			elif(d == 3):
+					#cur_pos = tuple(map(sum, zip(cur_pos, (0,-1))))
+					cur_pos += np.array([0,-1])
+			"""
+			if(d == 3):
 				if(direction == "right"):
 					direction = "up"
-					cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+					#cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+					#cur_pos += np.array([0,1])
 				elif(direction == "up"):
 					direction = "left"
-					cur_pos = tuple(map(sum, zip(cur_pos, (-1,0))))
+					#cur_pos = tuple(map(sum, zip(cur_pos, (-1,0))))
+					#cur_pos += np.array([-1,0])
 				elif(direction == "left"):
 					direction = "down"
-					cur_pos = tuple(map(sum, zip(cur_pos, (0,-1))))
+					#cur_pos = tuple(map(sum, zip(cur_pos, (0,-1))))
+					#cur_pos += np.array([0,-1])
 				elif(direction == "down"):
 					direction = "right"
-					cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+					#cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+					#cur_pos += np.array([1,0])
 			elif(d == 4):
-
 				if(direction == "right"):
 					direction = "down"
-					cur_pos = tuple(map(sum, zip(cur_pos, (0,-1))))
+					#cur_pos = tuple(map(sum, zip(cur_pos, (0,-1))))
 				elif(direction == "down"):
 					direction = "left"
-					cur_pos = tuple(map(sum, zip(cur_pos, (-1,0))))
+					#cur_pos = tuple(map(sum, zip(cur_pos, (-1,0))))
 				elif(direction == "left"):
 					direction = "up"
-					cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+					#cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
 				elif(direction == "up"):
 					direction = "right"
-					cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+					#cur_pos = tuple(map(sum, zip(cur_pos, (0,1))))
+
+		if(direction == "right"):
+			cur_pos += np.array([1,0])
+		elif(direction == "down"):
+			cur_pos += np.array([0,-1])
+		elif(direction == "left"):
+			cur_pos += np.array([-1,0])
+		elif(direction == "up"):
+			cur_pos += np.array([0,1])
+
 
 		coords.append(cur_pos)
 
@@ -119,10 +135,11 @@ def main():
 
 	import json
 	import sys
+	from count import count
 
 	# The total length of the self-avoiding walk we are checking
-	k = 3
-	#k = input("Enter a value k for the max length of the self-avoiding path: ")
+	#k = 3
+	k = int(input("Enter a value k for the max length of the self-avoiding path: "))
 
 	# The four directions (the language of the DFA).
 	# 1: Immediate return (loop on itself)
@@ -212,7 +229,7 @@ def main():
 					transfers[s][d-1] = d
 				
 
-			elif(cur_length < k):
+			elif(cur_length <= k):
 				if(d == 1):
 					transfers.append([-1,-1,-1,-1])
 					transfers[s][0] = "w"
@@ -270,6 +287,16 @@ def main():
 		"start": 0
 	}
 	"""
+
+	for j in range(len(transfers)):
+		for k in range(4):
+			if(transfers[j][k] == "w"):
+				transfers[j][k] = len(transfers) - 1
+
+	for i in range(len(state_lengths)):
+		if(state_lengths[i] == k):
+			end_states.append(i)
+
 	json_dfa = 	{
 					"transitions": transfers,
 					"states": treated,
@@ -291,6 +318,8 @@ def main():
 	#sys.stdout.write(str(json.dumps(json_dfa)))
 	#sys.stdout.flush()
 	#print()
+
+	#count(json_dfa, k)
 
 if __name__ == '__main__':
 	main()
